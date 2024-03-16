@@ -18,9 +18,17 @@ Polynomial::Polynomial(int deg, std::vector<double> coefficients) {
     this -> deg = deg;
     this -> coefficients = coefficients;
 }
+
+Polynomial::Polynomial(int deg, int n) {
+    this -> deg = deg;
+    for(int i = 0; i < deg; i++)
+        this -> coefficients.push_back(n);
+}
 /* Получить коэффициент при и n-ой степени */
 
 double &Polynomial::coef(int n) {
+    if (n > deg)
+        coefficients[n] = INFINITY;
     return this -> coefficients[n];
 }
 
@@ -38,7 +46,7 @@ double Polynomial::value(double point) {
  * на БПФ сил нету :-)
  * */
 
-Polynomial Polynomial::multyply(Polynomial polynomial1, Polynomial polynomial2) {
+Polynomial Polynomial::multyply(Polynomial &polynomial1, Polynomial &polynomial2) {
     int deg1 = polynomial1.deg;
     int deg2 = polynomial2.deg;
 
@@ -66,7 +74,7 @@ Polynomial Polynomial::multyply(Polynomial polynomial1, Polynomial polynomial2) 
 
 /* Вычитание многочленов */
 
-Polynomial Polynomial::minus(Polynomial polynomial1, Polynomial polynomial2) {
+Polynomial Polynomial::minus(Polynomial &polynomial1, Polynomial &polynomial2) {
     int deg1 = polynomial1.deg;
     int deg2 = polynomial2.deg;
 
@@ -91,7 +99,7 @@ Polynomial Polynomial::minus(Polynomial polynomial1, Polynomial polynomial2) {
 
 /* Покомпонентное сложение многочленов */
 
-Polynomial Polynomial::add(Polynomial polynomial1, Polynomial polynomial2) {
+Polynomial Polynomial::add(Polynomial &polynomial1, Polynomial &polynomial2) {
     int deg1 = polynomial1.deg;
     int deg2 = polynomial2.deg;
 
@@ -115,10 +123,39 @@ Polynomial Polynomial::add(Polynomial polynomial1, Polynomial polynomial2) {
 
 }
 
-std::ostream &operator<<(std::ostream &os, const Polynomial &polynomial) {
+std::ostream &operator<<(std::ostream &os, Polynomial &polynomial) {
     for(int i = 0; i < polynomial.deg; i++)
         os << polynomial.coefficients[i] << " ";
     os << std::endl;
     return os;
 }
+
+/* Вывод многчленов
+ * Спецификация: вводим не n коэффициентов, а n+1; старший из них нулевой */
+
+std::istream &operator>>(std::istream &os, Polynomial &polynomial) {
+    int i = 0;
+    while(polynomial.coef(i)!=INFINITY){
+        os >> polynomial.coef(i);
+        i++;
+    }
+    return os;
+}
+
+Polynomial::Polynomial(const Polynomial &polynomial) {
+    deg = polynomial.deg;
+    coefficients.resize(deg);
+    for(int i = 0; i < deg; i++){
+        coefficients[i] = polynomial.coefficients[i];
+    }
+}
+
+Polynomial::Polynomial(int x) {
+    deg = 0;
+    coefficients.push_back(x);
+}
+
+
+
+
 
