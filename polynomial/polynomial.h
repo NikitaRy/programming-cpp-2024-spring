@@ -29,6 +29,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, Polynomial& polynomial);
     friend std::istream& operator>>(std::istream& os, Polynomial& polynomial);
 
+    Polynomial &operator= (const Polynomial &polynomial);
+
 private:
 
     int deg;
