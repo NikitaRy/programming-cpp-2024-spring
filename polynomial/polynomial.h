@@ -2,6 +2,7 @@
 #define POLYNOMIAL_POLYNOMIAL_H
 #endif //POLYNOMIAL_POLYNOMIAL_H
 
+#include <cmath>
 #include <vector>
 #include <iostream>
 #include <initializer_list>
@@ -13,7 +14,7 @@ public:
     Polynomial();
     Polynomial(int deg, int n);
     Polynomial(int x);
-    Polynomial(int deg, std::vector<double> coefficients);
+    Polynomial(int deg, std::vector<double> &coefficients);
     Polynomial(const Polynomial &polynomial);
     Polynomial(std::initializer_list<double> &initializerList);
 
@@ -30,10 +31,15 @@ public:
     friend std::istream& operator>>(std::istream& os, Polynomial& polynomial);
 
     Polynomial &operator= (const Polynomial &polynomial);
-
     double &operator[] (int n);
 
 private:
+
+/*
+ * deg -- степень многочлена,
+ * coefficients -- вектор коэффициентов
+ *
+ * */
 
     int deg;
     std::vector<double> coefficients;

@@ -1,5 +1,3 @@
-#include <math.h>
-
 #include "polynomial.h"
 
 /* Конструктор по умолчанию: нулевой многочлен*/
@@ -15,11 +13,13 @@ Polynomial::~Polynomial(){}
 
 /* Конструктор по степени и вектору коэффициентов */
 
-Polynomial::Polynomial(int deg, std::vector<double> coefficients) {
+Polynomial::Polynomial(int deg, std::vector<double> &coefficients) {
     this -> deg = deg;
     this -> coefficients = coefficients;
 }
-
+/* Конструктор по степени --
+ * заполняем каким-то одним значением
+ * */
 Polynomial::Polynomial(int deg, int n) {
     this -> deg = deg;
     for(int i = 0; i < deg; i++)
@@ -59,6 +59,10 @@ Polynomial Polynomial::multyply(Polynomial &polynomial1, Polynomial &polynomial2
     if (deg1 < deg2)
         for(int i = 0; i < abs(deg1-deg2); i++)
             polynomial1.coefficients.push_back(0.0);
+
+/* Берем степень с запасом: удвоенную максимальную
+ * Очевидно, что это для некоторых случаев неоптимально по памяти
+ * Однако, в большинстве случаев, это решение неплохо*/
 
     int deg = std::max(deg1, deg2) * 2;
     std::vector<double> coefficients(deg, 0);
@@ -124,6 +128,8 @@ Polynomial Polynomial::add(Polynomial &polynomial1, Polynomial &polynomial2) {
 
 }
 
+/* Перегрузка operator<< */
+
 std::ostream &operator<<(std::ostream &os, Polynomial &polynomial) {
     for(int i = 0; i < polynomial.deg; i++)
         os << polynomial.coefficients[i] << " ";
@@ -143,6 +149,8 @@ std::istream &operator>>(std::istream &os, Polynomial &polynomial) {
     return os;
 }
 
+/* Конструктор копирования */
+
 Polynomial::Polynomial(const Polynomial &polynomial) {
     deg = polynomial.deg;
     coefficients.resize(deg);
@@ -151,16 +159,21 @@ Polynomial::Polynomial(const Polynomial &polynomial) {
     }
 }
 
+/* Cast-конструктор */
+
 Polynomial::Polynomial(int x) {
     deg = 0;
     coefficients.push_back(x);
 }
 
+/* Конструктор инициализации */
 Polynomial::Polynomial(std::initializer_list<double> &initializerList) {
     deg = initializerList.size();
     coefficients.resize(deg);
     std::copy(initializerList.begin(), initializerList.end(), coefficients.begin());
 }
+
+/* Перегрузка operator= */
 
 Polynomial &Polynomial::operator=(const Polynomial &polynomial) {
     if(this == &polynomial)
@@ -171,6 +184,10 @@ Polynomial &Polynomial::operator=(const Polynomial &polynomial) {
         coefficients[i] = polynomial.coefficients[i];
     return *this;
 }
+
+/* Индексация --
+ * аки аналог функции coef
+ * */
 
 double &Polynomial::operator[](int n) {
     if(n >= 0 && n < deg)
