@@ -1,7 +1,6 @@
 #include <iostream>
-#include "polynomial.h"
-#include "math.h"
 
+#include "polynomial.h"
 
 int main() {
     int n = 2;

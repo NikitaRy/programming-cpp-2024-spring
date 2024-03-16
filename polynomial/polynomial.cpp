@@ -1,4 +1,5 @@
 #include <math.h>
+
 #include "polynomial.h"
 
 /* Конструктор по умолчанию: нулевой многочлен*/
@@ -153,6 +154,12 @@ Polynomial::Polynomial(const Polynomial &polynomial) {
 Polynomial::Polynomial(int x) {
     deg = 0;
     coefficients.push_back(x);
+}
+
+Polynomial::Polynomial(std::initializer_list<double> &initializerList) {
+    deg = initializerList.size();
+    coefficients.resize(deg);
+    std::copy(initializerList.begin(), initializerList.end(), coefficients.begin());
 }
 
 
