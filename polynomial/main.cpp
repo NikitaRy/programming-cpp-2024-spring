@@ -9,6 +9,6 @@ int main() {
     //std::cout << polynomial.coef(n) << " "  << polynomial.value(0) << std::endl;
     Polynomial polynomial1 = polynomial;
 
-    std::cout << polynomial1;
+    std::cout << polynomial1[1];
     return 0;
 }

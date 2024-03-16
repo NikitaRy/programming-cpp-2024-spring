@@ -31,6 +31,8 @@ public:
 
     Polynomial &operator= (const Polynomial &polynomial);
 
+    double &operator[] (int n);
+
 private:
 
     int deg;

@@ -160,7 +160,7 @@ Polynomial::Polynomial(std::initializer_list<double> &initializerList) {
     deg = initializerList.size();
     coefficients.resize(deg);
     std::copy(initializerList.begin(), initializerList.end(), coefficients.begin());
-}   
+}
 
 Polynomial &Polynomial::operator=(const Polynomial &polynomial) {
     if(this == &polynomial)
@@ -171,6 +171,18 @@ Polynomial &Polynomial::operator=(const Polynomial &polynomial) {
         coefficients[i] = polynomial.coefficients[i];
     return *this;
 }
+
+double &Polynomial::operator[](int n) {
+    if(n >= 0 && n < deg)
+        return coefficients[n];
+    if(n >= deg){
+        static double k = 0;
+        return k;
+    }
+    else
+        exit(-1);
+}
+
 
 
 
