@@ -47,7 +47,7 @@ double Polynomial::value(double point) {
  * на БПФ сил нету :-)
  * */
 
-Polynomial Polynomial::multyply(Polynomial &polynomial1, Polynomial &polynomial2) {
+Polynomial Polynomial::multyply(Polynomial &polynomial1, Polynomial &polynomial2) const{
     int deg1 = polynomial1.deg;
     int deg2 = polynomial2.deg;
 
@@ -79,7 +79,7 @@ Polynomial Polynomial::multyply(Polynomial &polynomial1, Polynomial &polynomial2
 
 /* Вычитание многочленов */
 
-Polynomial Polynomial::minus(Polynomial &polynomial1, Polynomial &polynomial2) {
+Polynomial Polynomial::minus(Polynomial &polynomial1, Polynomial &polynomial2) const{
     int deg1 = polynomial1.deg;
     int deg2 = polynomial2.deg;
 
@@ -104,7 +104,7 @@ Polynomial Polynomial::minus(Polynomial &polynomial1, Polynomial &polynomial2) {
 
 /* Покомпонентное сложение многочленов */
 
-Polynomial Polynomial::add(Polynomial &polynomial1, Polynomial &polynomial2) {
+Polynomial Polynomial::add(Polynomial &polynomial1, Polynomial &polynomial2) const {
     int deg1 = polynomial1.deg;
     int deg2 = polynomial2.deg;
 
@@ -123,9 +123,7 @@ Polynomial Polynomial::add(Polynomial &polynomial1, Polynomial &polynomial2) {
     for(int i = 0; i < deg; i++)
         coefficients.push_back(polynomial1.coefficients[i]+polynomial2.coefficients[i]);
 
-    Polynomial polynomial(deg, coefficients);
-    return polynomial;
-
+    return std::move(Polynomial(deg, coefficients));
 }
 
 /* Перегрузка operator<< */
@@ -140,7 +138,7 @@ std::ostream &operator<<(std::ostream &os, Polynomial &polynomial) {
 /* Вывод многчленов
  * Спецификация: вводим не n коэффициентов, а n+1; старший из них нулевой */
 
-std::istream &operator>>(std::istream &os, Polynomial &polynomial) {
+std::istream &operator>>(std::istream &os, Polynomial &polynomial)  {
     int i = 0;
     while(polynomial.coef(i)!=INFINITY){
         os >> polynomial.coef(i);
@@ -202,17 +200,21 @@ double &Polynomial::operator[](int n) {
 
 /* Перемещающее присваивание */
 
-Polynomial &Polynomial::operator=(Polynomial &&polynomial) {
+Polynomial &Polynomial::operator=(Polynomial &&polynomial){
     if(this == &polynomial)
         return *this;
     polynomial.coefficients.resize(this->deg);
     for(int i = 0; i < polynomial.deg; i++){
         polynomial.coefficients[i] = this->coefficients[i];
     }
+
     return *this;
 }
 
-double &Polynomial::operator()(double point) {
+/* Перегрузка operator():
+ * значение многочлена в точке point*/
+
+double &Polynomial::operator()(double point) const{
     static double value = 0;
     for(int i = 0; i < this->deg; i++){
         value += this->coefficients[i]*std::pow(point, i);
