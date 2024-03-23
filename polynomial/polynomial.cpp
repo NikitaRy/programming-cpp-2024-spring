@@ -200,6 +200,26 @@ double &Polynomial::operator[](int n) {
         exit(-1);
 }
 
+/* Перемещающее присваивание */
+
+Polynomial &Polynomial::operator=(Polynomial &&polynomial) {
+    if(this == &polynomial)
+        return *this;
+    polynomial.coefficients.resize(this->deg);
+    for(int i = 0; i < polynomial.deg; i++){
+        polynomial.coefficients[i] = this->coefficients[i];
+    }
+    return *this;
+}
+
+double &Polynomial::operator()(double point) {
+    static double value = 0;
+    for(int i = 0; i < this->deg; i++){
+        value += this->coefficients[i]*std::pow(point, i);
+    }
+    return value;
+}
+
 
 
 

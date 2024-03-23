@@ -17,6 +17,7 @@ public:
     Polynomial(int deg, std::vector<double> &coefficients);
     Polynomial(const Polynomial &polynomial);
     Polynomial(std::initializer_list<double> &initializerList);
+    Polynomial(Polynomial &&polynomial): coefficients(polynomial.coefficients), deg(polynomial.deg){};
 
     ~Polynomial();
 
@@ -31,7 +32,10 @@ public:
     friend std::istream& operator>>(std::istream& os, Polynomial& polynomial);
 
     Polynomial &operator= (const Polynomial &polynomial);
+    Polynomial &operator= (Polynomial &&polynomial);
+
     double &operator[] (int n);
+    double &operator() (double point);
 
 private:
 
