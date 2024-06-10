@@ -1,98 +1,210 @@
 #include <iostream>
-#include <stack>
-#include <cmath>
 #include <string>
+#include <vector>
 #include <sstream>
 
-/*
- * Считает выражение в обратной польской нотации.
- * Дана строка в ОПЗ
- *
- * В стек кидаем числа при помощи вспомогательного потока (его мы очищаем,
- * когда встречаем пробел);
- *
- * При арифметической операции мы достаем два числа из стека
- * и выполняем операцию, а после кидаем результат в стек
- *
- * В конце концов достаем результат из стека и возвращаем
- *
- * Непонятно, зачем нужен костыль в виде зануления переменных --
- * без него все портится...
- * */
-int f2(std::string string_in_rpo){
-    int result;
-    int x, y;
-    std::stack<int> numbers_in_rpo;
-    std::stringstream helpful_stream;
+/* Шаблон для вывода выражения в ОПЗ */
+template<typename T>
+void print(T const& xs)
+{
+    std::cout << "[ ";
+    for (auto const& x : xs)
+        std::cout << x << ' ';
+    std::cout << "]\n";
+}
 
-    for(int i = 0; i < string_in_rpo.size(); i++){
-
-        switch (string_in_rpo[i]) {
-
-            /* Достаем из стека два числа и складываем и обратно в стек,
-             * а потом обнуляем вспомогательные переменные.
-             * Аналогично для других операций
-             * */
-
-            case '+':
-                x = numbers_in_rpo.top();
-                numbers_in_rpo.pop();
-                y = numbers_in_rpo.top();
-                numbers_in_rpo.pop();
-                numbers_in_rpo.push(x+y);
-                x = NULL;
-                y = NULL;
-                break;
-            case '-':
-                x = numbers_in_rpo.top();
-                numbers_in_rpo.pop();
-                y = numbers_in_rpo.top();
-                numbers_in_rpo.pop();
-                numbers_in_rpo.push(x-y);
-                x = NULL;
-                y = NULL;
-                break;
-            case '/':
-                x = numbers_in_rpo.top();
-                numbers_in_rpo.pop();
-                y = numbers_in_rpo.top();
-                numbers_in_rpo.pop();
-                numbers_in_rpo.push(x/y);
-                x = NULL;
-                y = NULL;
-                break;
-            case '*':
-                x = numbers_in_rpo.top();
-                numbers_in_rpo.pop();
-                y = numbers_in_rpo.top();
-                numbers_in_rpo.pop();
-                numbers_in_rpo.push(x*y);
-                x = NULL;
-                y = NULL;
-                break;
-            default:
-
-                /* Если видим цифру, то кидаем ее во вспомогательный поток
-                 * Если пробел, то все, что нашли в потоке, кидаем в стек.
-                 * И очищаем поток...*/
-
-                if(isdigit(string_in_rpo[i])){
-                    helpful_stream << string_in_rpo[i];
-                }
-                if(isspace(string_in_rpo[i])){
-                    int number;
-                    helpful_stream >> number;
-                    helpful_stream.clear();
-                    numbers_in_rpo.push(number);
-                }
-                break;
+/* Вычисление выражения в ОПЗ */
+void f2(){
+    std::vector<int> stack;
+    char x = 'a';
+    int number;
+    while (std::cin >> x){
+        if (isdigit(x)){
+            std::cin.putback(x);
+            std::cin >> number;
+            stack.push_back(number);
+        }else{
+            int size = stack.size() - 1;
+            int a = stack[size], b = stack[size - 1];
+            stack.pop_back();
+            stack.pop_back();
+            if(x == '+') stack.push_back(a + b);
+            else if (x == '-') stack.push_back(b - a);
+            else if (x == '/') stack.push_back(b / a);
+            else if (x == '*') stack.push_back(a * b);
+            if (stack.size() == 1) break;
         }
     }
-    result = numbers_in_rpo.top();
+    std::cout << stack[0] << std::endl;
+}
+
+/* Перевод в ОПЗ */
+std::string f1(){
+    std::vector<char> stack;
+    char x = 'a';
+    std::string number;
+    std::string result = "";
+    while (std::cin >> x){
+        if (isdigit(x)){
+            std::cin.putback(x);
+            std::cin >> number;
+            result += number + " ";
+        }
+        else{
+            if (x == '+' || x == '-' || x == '/' || x == '*'){
+                while (stack.size() != 0){
+                    char el = stack[stack.size() - 1];
+                    if ((x == '*' || x == '/') && (el == '+' || el == '-' )){
+                        break;
+                    }
+                    else if (el == '(') break;
+                    else{
+                        stack.pop_back();
+                        result += el;
+                        result += " ";
+                    }
+                }
+                stack.push_back(x);
+            }
+            else if (x == '(') stack.push_back(x);
+            else if (x == ')') {
+                char el = stack[stack.size() - 1];
+                stack.pop_back();
+                while (el != '('){
+                    std::cout << el << std::endl;
+                    result += el;
+                    result += " ";
+                    el = stack[stack.size() - 1];
+                    stack.pop_back();
+                }
+            }
+        }
+    }
+    while (stack.size() != 0){
+        char el = stack[stack.size() - 1];
+        stack.pop_back();
+        result += el;
+        result += " ";
+    }
     return result;
 }
 
-int main() {
-    std::cout << f2("1 2 + 4 * 3 +");
+std::string f1_string(std::string s){
+    std::vector <char> stack;
+    char x = s[0];
+    s.erase(0, 1);
+    std::string number;
+    std::string result = "";
+    while (x != '\0'){
+        if (isdigit(x)){
+            number = x + s.substr(0,s.find(" "));
+            s.erase(0,  s.find("") + 1);
+            result += number + " ";
+        }
+        else{
+            if (x == '+' || x == '-' || x == '/' || x == '*'){
+                while (stack.size() != 0){
+                    char el = stack[stack.size() - 1];
+                    if ((x == '*' || x == '/') && (el == '+' || el == '-')){
+                        break;
+                    }
+                    else if (el == '(') break;
+                    else{
+                        stack.pop_back();
+                        result += el;
+                        result += " ";
+                    }
+                }
+                stack.push_back(x);
+            }
+            else if (x == '(') stack.push_back(x);
+            else if (x == ')') {
+                char el = stack[stack.size() - 1];
+                stack.pop_back();
+                while (el != '('){
+                    result += el;
+                    result += " ";
+                    el = stack[stack.size() - 1];
+                    stack.pop_back();
+                }
+            }
+        }
+        if (s.length() == 0) x = '\0';
+        else x = s[0];
+        s.erase(0, 1);
+    }
+    while (stack.size() != 0){
+        char el = stack[stack.size() - 1];
+        stack.pop_back();
+        result += el;
+        result += " ";
+    }
+    return result;
+}
+int f2_string(std::string s){
+    std::vector<int> stack;
+    char x = s[0];
+    s.erase(0, 1);
+    int number;
+    while (x != '\0'){
+        if (isdigit(x)){
+            number = stoi(x + s.substr(0, s.find(" ")));
+            s.erase(0, s.find("") + 1);
+            stack.push_back(number);
+        }else{
+            int size = stack.size() - 1;
+            int a = stack[size], b = stack[size - 1];
+            stack.pop_back();
+            stack.pop_back();
+            if(x == '+') stack.push_back(a + b);
+            else if (x == '-') stack.push_back(b - a);
+            else if (x == '/') stack.push_back(b / a);
+            else if (x == '*') stack.push_back(a * b);
+            if (stack.size() == 1) break;
+        }
+        if (s.length() == 0) x = '\0';
+        else x = s[0];
+        if (x == ' ') { x = s[1]; s.erase(0, 1); };
+        s.erase(0, 1);
+    }
+    return stack[0];
+}
+
+/* Вводим в ОПЗ*/
+void f2_another_cin(std::string s){
+    std::vector<int> stack;
+    std::stringstream st;
+    st << s;
+    char x = 'a';
+    int number;
+    while (st >> x){
+        if (isdigit(x)){
+            st.putback(x);
+            st >> number;
+            stack.push_back(number);
+        }
+        else{
+            int size = stack.size() - 1;
+            int a = stack[size], b = stack[size - 1];
+            stack.pop_back();
+            stack.pop_back();
+            if (x == '+') stack.push_back(a + b);
+            else if (x == '-') stack.push_back(b - a);
+            else if (x == '/') stack.push_back(b / a);
+            else if (x == '*') stack.push_back(a * b);
+            if (stack.size() == 1) break;
+        }
+    }
+    std::cout << stack[0] << std::endl;
+}
+
+/* Перевод в ОПЗ и вычисление */
+void f3(std::string s){
+    std::string pol = f1_string(s);
+    std::cout << f2_string(pol) << std::endl;
+}
+
+int main()
+{
     return 0;
 }
