@@ -167,5 +167,5 @@ int main()
     t.print();
     ANode<int>* find_p = t.findWithArray({ 2,1 });
     if (find_p != nullptr) std::cout << find_p->data;
-    return EXIT_SUCCESS;
+    return 0;
 }
